@@ -1,46 +1,124 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+@file:Suppress("UnstableApiUsage")
 
+import com.github.benmanes.gradle.versions.reporter.result.Result
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+import org.jlleitschuh.gradle.ktlint.KtlintExtension
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        @Suppress("GradleDynamicVersion")
+        classpath("com.github.ben-manes:gradle-versions-plugin:+")
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:11.0.0")
+    }
+}
+
+// Don't use plugin {} for this one, check https://github.com/ben-manes/gradle-versions-plugin
+apply(plugin = libs.plugins.versions.get().pluginId)
 plugins {
-    kotlin("jvm") version "1.7.10"
-    application
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.ktlint) apply false
+    alias(libs.plugins.detekt) apply false
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+val detektVersion = libs.versions.detekt.get().toString()
+val ktlintAlias: String = libs.plugins.ktlint.get().pluginId
+val detektAlias: String = libs.plugins.detekt.get().pluginId
 
-application {
-    mainClass.set("Main.kt")
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation("com.github.ajalt.clikt:clikt:3.5.0")
-    implementation("me.tongfei:progressbar:0.9.5")
-    implementation("org.lucee:commons-io:2.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-
-    testImplementation(kotlin("test"))
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-
-tasks.jar {
-    manifest {
-        attributes["Main-Class"] = "MainKt"
-    }
-    configurations["compileClasspath"].forEach { file: File ->
-        from(zipTree(file.absoluteFile))
+allprojects {
+    pluginManager.apply {
+        apply(ktlintAlias)
+        apply(detektAlias)
     }
 
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    extensions.configure<DetektExtension> {
+        autoCorrect = true
+        config.setFrom(files("${rootProject.projectDir}/configs/detekt.yml"))
+    }
+
+    extensions.configure<KtlintExtension> {
+        filter {
+            exclude { projectDir.toURI().relativize(it.file.toURI()).path.contains("/generated/") }
+        }
+    }
+
+    dependencies {
+        add("detektPlugins", "io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion")
+    }
+}
+
+fun String.isNonStable(): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { toUpperCase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(this)
+    return isStable.not()
+}
+
+tasks.register("clean", Delete::class) {
+    delete(rootProject.buildDir)
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    resolutionStrategy {
+        componentSelection {
+            all {
+                if (candidate.version.isNonStable() && !currentVersion.isNonStable()) {
+                    reject("Release candidate")
+                }
+            }
+        }
+    }
+
+    // optional parameters
+    checkForGradleUpdate = true
+    outputFormatter = closureOf<Result> {
+        val updatable = outdated.dependencies
+        if (updatable.isNotEmpty()) {
+            val writer = java.io.StringWriter()
+            val html = groovy.xml.MarkupBuilder(writer)
+
+            html.withGroovyBuilder {
+                "html"() {
+                    "body"() {
+                        "table"() {
+                            "thead"() {
+                                "tr"() {
+                                    "td"("Package")
+                                    "td"("Current version")
+                                    "td"("Latest version")
+                                }
+                            }
+                            "tbody"() {
+                                updatable.forEach { dependency ->
+                                    "tr"() {
+                                        "td"("${dependency.group}:${dependency.name}")
+                                        "td"(dependency.version)
+                                        "td"(
+                                            dependency.available.release
+                                                ?: dependency.available.milestone
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        if (gradle.current.isUpdateAvailable) {
+                            "p"("Theres currently a gradle update available, your current version: ${gradle.current.version}")
+                        }
+                    }
+                }
+            }
+            println(writer.toString())
+        }
+    }
+    outputDir = "build/dependencyUpdates"
+    reportfileName = "report.html"
 }
