@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Tenantmgt-android</string>
+    <string name="view_description">View</string>
+    <string name="username">Username</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="register">Register</string>
+    <string name="registration">Registration</string>
 </resources>
