@@ -12,21 +12,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.github.tenantmgt.Models.Bills;
 import io.github.tenantmgt.R;
+import io.github.tenantmgt.databinding.ActivityAddAnnouncementBinding;
 import io.github.tenantmgt.databinding.ActivityAddBillBinding;
-import io.github.tenantmgt.databinding.ActivityGenerateInvoiceBinding;
 
-public class AddBill extends AppCompatActivity {
+public class AddAnnouncement extends AppCompatActivity {
 
-
-    ActivityAddBillBinding binding;
+    ActivityAddAnnouncementBinding binding;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_bill);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_announcement);
 
         getWindow().setStatusBarColor(SurfaceColors.SURFACE_0.getColor(this));
         getWindow().setNavigationBarColor(SurfaceColors.SURFACE_0.getColor(this));
@@ -38,13 +36,12 @@ public class AddBill extends AppCompatActivity {
             finish();
         });
 
-        binding.addBill.setOnClickListener(v -> {
-            String billname = binding.billType.getText().toString();
-            Double billamount = Double.parseDouble(binding.billAmount.getText().toString());
-            Map<String, Double> map = new HashMap<>();
-            map.put(billname, billamount);
-            db.collection("addbills").document(mAuth.getCurrentUser().getEmail()).set(map).addOnCompleteListener(e -> {
-               finish();
+        binding.addAnnouncement.setOnClickListener(v -> {
+            String announcement = binding.announcementText.getText().toString();
+            Map<String, String> map = new HashMap<>();
+            map.put("message", announcement);
+            db.collection("announcements").document(mAuth.getCurrentUser().getEmail()).set(map).addOnCompleteListener(e -> {
+                finish();
             });
         });
     }
