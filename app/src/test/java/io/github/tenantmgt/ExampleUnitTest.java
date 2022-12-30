@@ -1,4 +1,4 @@
-package io.github.tenantmgt_android;
+package io.github.tenantmgt;
 
 import org.junit.Test;
 

@@ -7,4 +7,7 @@
     <string name="forgot_password">Forgot Password?</string>
     <string name="register">Register</string>
     <string name="registration">Registration</string>
+    <string name="go_back_to_login">Go back to Login</string>
+    <string name="retype_password">Retype Password</string>
+    <string name="email">Email</string>
 </resources>
