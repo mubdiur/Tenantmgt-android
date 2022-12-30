@@ -31,6 +31,8 @@
             android:id="@+id/scrollView2"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:contentDescription="@string/app_name"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -40,8 +42,80 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/manageRoles"
+                        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:layout_weight="1"
+                        android:text="Manage Roles"
+                        app:icon="@drawable/icon_name_official__style_false__size_24px"
+                        app:iconGravity="textTop" />
+
+                    <Button
+                        android:id="@+id/generateInvoice"
+                        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:layout_weight="1"
+                        android:text="Generate Invoice"
+                        app:icon="@drawable/icon_name_delivered__style_false__size_24px"
+                        app:iconGravity="textTop" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/makeAnnouncement"
+                        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:layout_weight="1"
+                        android:text="Announcement"
+                        app:icon="@drawable/icon_name_announcement__style_false__size_24px"
+                        app:iconGravity="textTop" />
+
+                    <Button
+                        android:id="@+id/viewInvoices"
+                        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:layout_weight="1"
+                        android:text="View Invoices"
+                        app:icon="@drawable/icon_name_list_view__style_false__size_24px"
+                        app:iconGravity="textTop" />
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="Towers" />
+
+                <View
+                    android:id="@+id/divider4"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+            </LinearLayout>
         </ScrollView>
+
 
         <ImageButton
             android:id="@+id/optionsButton"
