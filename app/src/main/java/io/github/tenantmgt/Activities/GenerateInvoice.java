@@ -54,7 +54,6 @@ public class GenerateInvoice extends AppCompatActivity {
         });
 
         binding.generateInvoice.setOnClickListener(v -> {
-            
         });
 
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.billsList);

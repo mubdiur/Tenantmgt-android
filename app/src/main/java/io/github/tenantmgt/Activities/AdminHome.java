@@ -25,5 +25,10 @@ public class AdminHome extends AppCompatActivity {
         binding.optionsButton.setOnClickListener(v -> {
             startActivity(optionIntent);
         });
+
+        Intent intentGenerateInvoice = new Intent(this, GenerateInvoice.class);
+        binding.generateInvoice.setOnClickListener(v -> {
+            startActivity(intentGenerateInvoice);
+        });
     }
 }
